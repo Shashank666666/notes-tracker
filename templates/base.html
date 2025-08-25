@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Notes Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script defer src="{{ url_for('static', filename='app.js') }}"></script>
+</head>
+<body>
+    <nav class="nav">
+        <div class="container nav-inner">
+            <a class="brand" href="{{ url_for('dashboard') }}">Notes Tracker</a>
+            <div class="spacer"></div>
+            {% if current_user.is_authenticated %}
+                <span class="user-email">{{ current_user.email }}</span>
+                {% if current_user.is_admin %}
+                <a class="btn" href="{{ url_for('admin') }}">Admin</a>
+                {% endif %}
+                <a class="btn" href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a class="btn" href="{{ url_for('login') }}">Login</a>
+                <a class="btn" href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flash-list">
+                {% for category, message in messages %}
+                    <li class="flash {{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+    
+</body>
+</html>
+
+

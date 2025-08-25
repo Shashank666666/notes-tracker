@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Admin</h1>
+<h2>Users</h2>
+<table class="table">
+  <thead><tr><th>ID</th><th>Email</th><th>Is Admin</th><th>Created</th><th>Actions</th></tr></thead>
+  <tbody>
+  {% for u in users %}
+    <tr>
+      <td>{{ u.id }}</td>
+      <td>{{ u.email }}</td>
+      <td>{{ 'Yes' if u.is_admin else 'No' }}</td>
+      <td data-dt="{{ u.created_at.isoformat() }}" class="js-dt"></td>
+      <td>
+        <form method="post" action="{{ url_for('admin_reset_password') }}" style="display:flex; gap:8px; align-items:center">
+          <input type="hidden" name="user_id" value="{{ u.id }}" />
+          <input type="password" name="new_password" placeholder="New password" minlength="6" required />
+          <button class="btn" type="submit">Reset</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+  </table>
+
+<h2>Notes</h2>
+<table class="table">
+  <thead><tr><th>ID</th><th>User</th><th>Date (DD/MM/YYYY)</th><th>Created (Local)</th><th>Updated (Local)</th><th>Content</th><th>Actions</th></tr></thead>
+  <tbody>
+  {% for n in notes %}
+    <tr>
+      <td>{{ n.id }}</td>
+      <td>{{ n.user.email }}</td>
+      <td data-date="{{ n.note_date.isoformat() }}" class="js-date"></td>
+      <td data-dt="{{ n.created_at.isoformat() }}" class="js-dt"></td>
+             <td data-dt="{{ n.updated_at.isoformat() }}" class="js-dt"></td>
+       <td class="cell-pre">{{ n.content }}</td>
+       <td>
+         <form method="post" action="{{ url_for('admin_delete_note') }}" style="display:inline">
+           <input type="hidden" name="note_id" value="{{ n.id }}" />
+           <button class="btn" type="submit" onclick="return confirm('Delete this note?')" style="background:#ef4444;border-color:#ef4444">Delete</button>
+         </form>
+       </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<h2>Recent Logins</h2>
+<table class="table">
+  <thead><tr><th>When (Local)</th><th>User</th><th>IP</th><th>User-Agent</th></tr></thead>
+  <tbody>
+  {% for e in events %}
+    <tr>
+      <td data-dt="{{ e.created_at.isoformat() }}" class="js-dt"></td>
+      <td>{{ e.user_id }}</td>
+      <td>{{ e.ip_address }}</td>
+      <td class="cell-pre">{{ e.user_agent }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<script>
+     // Format helpers (DD/MM/YYYY hh:mm AM/PM in local timezone)
+   (function(){
+     console.log('Admin formatter running...');
+     const pad = n => String(n).padStart(2, '0');
+     // Datetime: DD/MM/YYYY HH:mm
+     const dtEls = document.querySelectorAll('.js-dt[data-dt]');
+     console.log('Found', dtEls.length, 'datetime elements');
+     for (const el of dtEls) {
+       const iso = el.getAttribute('data-dt');
+       if (!iso) continue;
+       console.log('Processing ISO:', iso);
+       const d = new Date(iso);
+       if (isNaN(d)) { 
+         console.log('Invalid date for:', iso);
+         el.textContent = iso; 
+         continue; 
+       }
+       console.log('Local date object:', d);
+       const hours24 = d.getHours();
+       const hours12 = ((hours24 % 12) || 12);
+       const ampm = hours24 >= 12 ? 'PM' : 'AM';
+       const s = `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(hours12)}:${pad(d.getMinutes())} ${ampm}`;
+       console.log('Formatted as:', s);
+       el.textContent = s;
+     }
+    // Date only: DD/MM/YYYY
+    const dateEls = document.querySelectorAll('.js-date[data-date]');
+    for (const el of dateEls) {
+      const iso = el.getAttribute('data-date'); // YYYY-MM-DD
+      const d = new Date(iso + 'T00:00:00');
+      if (isNaN(d)) { el.textContent = iso; continue; }
+      const s = `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+      el.textContent = s;
+    }
+  })();
+  </script>
+{% endblock %}
+
+

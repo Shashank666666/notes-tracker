@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Note for {{ note_date.isoformat() }}</h1>
+<form method="post" class="form">
+  <textarea name="content" rows="14" placeholder="Write your thoughts...">{{ content }}</textarea>
+  <div class="actions">
+    <button class="btn primary" type="submit">Save</button>
+    <a class="btn" href="{{ url_for('dashboard') }}">Back to calendar</a>
+  </div>
+{% endblock %}
+
+

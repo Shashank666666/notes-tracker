@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Dashboard</h1>
+<div class="calendar-card">
+  <div class="calendar-header">
+    <button id="prevMonth" class="btn">Prev</button>
+    <div id="currentMonth"></div>
+    <button id="nextMonth" class="btn">Next</button>
+  </div>
+  <div id="calendar" class="calendar-grid"></div>
+</div>
+<script>
+  window.CALENDAR_INIT = { today: "{{ today_iso }}", noteUrlBase: "{{ url_for('note', date_str='__DATE__') }}" };
+</script>
+{% endblock %}
+
+
