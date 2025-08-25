@@ -50,7 +50,6 @@ A Flask-based web application for managing and organizing notes with user authen
    python app.py
    ```
 
-6. Open your browser and navigate to `http://localhost:5000`
 
 ## Usage
 
